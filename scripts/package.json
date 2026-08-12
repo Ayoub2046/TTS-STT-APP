@@ -1,0 +1,17 @@
+{
+  "name": "maay-maxaa-datahub-scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dataset": "node node_modules/tsx/dist/cli.mjs dataset-cli.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "dotenv": "^16.4.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4"
+  }
+}

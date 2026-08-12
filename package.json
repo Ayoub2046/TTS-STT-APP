@@ -1,0 +1,19 @@
+{
+  "name": "maay-maxaa-datahub",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Collaborative Maay ↔ Maxaa translation dataset collection & curation platform",
+  "workspaces": ["frontend", "backend", "scripts"],
+  "scripts": {
+    "dev:backend": "npm --workspace backend run dev",
+    "dev:frontend": "npm --workspace frontend run dev",
+    "typecheck": "npm run typecheck --workspace backend && npm run typecheck --workspace frontend",
+    "build": "npm run build --workspace backend && npm run build --workspace frontend",
+    "dataset:validate": "npm --workspace scripts run dataset -- validate",
+    "dataset:generate": "npm --workspace scripts run dataset -- generate",
+    "dataset:split": "npm --workspace scripts run dataset -- split"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
