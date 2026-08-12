@@ -90,8 +90,7 @@ STEP 13     Documentation & deployment                 ✅ completed
 
 ## Deployment
 
-- Frontend → Vercel
-- Backend → Render / Railway / Fly.io
+- Whole app (frontend + Express API) → **Vercel** (single project, see `docs/DEPLOYMENT.md`)
 - Database → Supabase
 - Dataset → Hugging Face
 

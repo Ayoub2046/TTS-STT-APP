@@ -1,0 +1,14 @@
+# Keep local-only files and build output out of the Vercel deploy bundle.
+# NOTE: do NOT ignore the `frontend` / `backend` / `scripts` workspace folders —
+# Vercel builds the monorepo by installing all npm workspaces.
+node_modules/
+dist/
+output/
+.env
+.env.local
+backend/.env
+*.log
+.vercel/
+.vscode/
+coverage/
+.DS_Store

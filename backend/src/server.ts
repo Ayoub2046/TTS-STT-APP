@@ -46,7 +46,7 @@ app.use("/api/admin", adminRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-if (env.NODE_ENV !== "test") {
+if (env.NODE_ENV !== "test" && !process.env.VERCEL) {
   app.listen(env.PORT, () => {
     console.log(`🚀 MaayMaxaa DataHub API listening on http://localhost:${env.PORT}`);
   });
