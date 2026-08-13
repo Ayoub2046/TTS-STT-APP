@@ -49,7 +49,7 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <a
+            {/* <a
               href="https://huggingface.co/datasets/SomaliDatasets/maay-maxaa-translation"
               target="_blank"
               rel="noopener noreferrer"
@@ -58,7 +58,7 @@ export default function LandingPage() {
               <Globe className="h-3.5 w-3.5 text-indigo-400" />
               HF Repository
               <ExternalLink className="h-3 w-3 text-slate-400" />
-            </a>
+            </a> */}
 
             {user ? (
               <button
@@ -101,14 +101,14 @@ export default function LandingPage() {
             <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
               Empowering Somali AI through{" "}
               <span className="bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">
-                Maay ↔ Maxaa
+                Af-Maay ↔ Maxaa
               </span>{" "}
               Parallel Datasets
             </h1>
 
             <p className="max-w-3xl mx-auto text-base sm:text-lg text-slate-300 leading-relaxed">
               A collaborative platform designed to collect, peer-review, and curate high-precision parallel sentences
-              between <strong>Maay Maay</strong> and <strong>Maxaa-tiri</strong>. Built for researchers, AI developers,
+              between <strong>Af-Maay</strong> and <strong>Maxaa-tiri</strong>. Built for researchers, AI developers,
               and native speakers building Speech and NLP models for Somali.
             </p>
 
@@ -120,7 +120,7 @@ export default function LandingPage() {
                 <HeartHandshake className="h-4 w-4" />
                 {user ? "Contribute Sentences" : "Join as Contributor"}
               </button>
-              <a
+              {/* <a
                 href={stats?.hfRepoUrl ?? "https://huggingface.co/datasets/SomaliDatasets/maay-maxaa-translation"}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -129,7 +129,7 @@ export default function LandingPage() {
                 <Globe className="h-4 w-4 text-indigo-400" />
                 View on Hugging Face
                 <ExternalLink className="h-3.5 w-3.5 text-slate-400" />
-              </a>
+              </a> */}
             </div>
 
             {/* Dynamic Live Stats Bar */}
@@ -187,7 +187,7 @@ export default function LandingPage() {
         <section className="py-16 px-6 bg-slate-900/40 border-y border-white/5">
           <div className="max-w-5xl mx-auto space-y-12">
             <div className="text-center space-y-3">
-              <h2 className="text-3xl font-bold text-white">About MaayMaxaa DataHub</h2>
+              <h2 className="text-3xl font-bold text-white">About Af-Maay & Maxaa DataHub</h2>
               <p className="text-slate-400 text-sm max-w-2xl mx-auto">
                 Building accessible, high-quality parallel corpora for the two main Somali spoken varieties.
               </p>
@@ -197,12 +197,12 @@ export default function LandingPage() {
               <div className="space-y-4 text-slate-300 text-sm leading-relaxed">
                 <p>
                   Somali is a Afroasiatic language spoken by over 25 million people across the Horn of Africa. While
-                  <strong> Maxaa-tiri</strong> serves as the standardized official language, <strong>Maay Maay</strong> is widely
+                  <strong> Maxaa-tiri</strong> serves as the standardized official language, <strong>Af-Maay</strong> is widely
                   spoken by millions across Southwestern Somalia.
                 </p>
                 <p>
                   Due to historical scarcity in parallel digital resources, machine translation systems and voice AI models
-                  struggle with Maay dialectal nuances. <strong>MaayMaxaa DataHub</strong> solves this gap by bringing native speakers,
+                  struggle with Maay dialectal nuances. <strong>Af-Maay & Maxaa DataHub</strong> solves this gap by bringing native speakers,
                   linguists, and AI developers together into an open, peer-reviewed workflow.
                 </p>
                 <div className="pt-2 flex flex-wrap gap-2">
@@ -260,8 +260,8 @@ export default function LandingPage() {
                 </div>
                 <div className="space-y-2 text-sm">
                   <div>
-                    <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block">Maay Maay</span>
-                    <p className="text-slate-100 font-medium">Hadaad adiyee, maxaa ii keentaa?</p>
+                    <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block">Af-Maay</span>
+                    <p className="text-slate-100 font-medium">Hooby athay bahaasy may iing sheenasy?</p>
                   </div>
                   <div className="pt-1">
                     <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider block">Maxaa-tiri</span>
@@ -281,8 +281,8 @@ export default function LandingPage() {
                 </div>
                 <div className="space-y-2 text-sm">
                   <div>
-                    <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block">Maay Maay</span>
-                    <p className="text-slate-100 font-medium">Kulaankani waa mid aad u muhiim ah.</p>
+                    <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block">Af-Maay</span>
+                    <p className="text-slate-100 font-medium">Kulunkung Ko eed muhiing ang ewu.</p>
                   </div>
                   <div className="pt-1">
                     <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider block">Maxaa-tiri</span>
@@ -373,14 +373,14 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="flex items-center gap-6">
-            <a
+            {/* <a
               href="https://huggingface.co/datasets/SomaliDatasets/maay-maxaa-translation"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-indigo-400 transition"
             >
               Hugging Face Hub
-            </a>
+            </a> */}
             <Link to="/login" className="hover:text-slate-300 transition">
               Log In
             </Link>
