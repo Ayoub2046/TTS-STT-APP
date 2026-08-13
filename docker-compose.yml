@@ -35,7 +35,7 @@ services:
     container_name: maaymaxaa-frontend
     restart: always
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       backend:
         condition: service_started
