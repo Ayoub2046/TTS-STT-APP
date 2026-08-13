@@ -47,7 +47,7 @@ export async function getAuditLogs(req: Request, res: Response): Promise<void> {
 
   const { data, error } = await getSupabase()
     .from("audit_logs")
-    .select("*, profiles(full_name, email)")
+    .select("*, profiles!user_id(full_name, email)")
     .order("created_at", { ascending: false })
     .limit(limitNum);
 

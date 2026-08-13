@@ -1,7 +1,10 @@
 import { z } from "zod";
 import dotenv from "dotenv";
 
+import path from "path";
+
 dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), "backend/.env") });
 
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
@@ -11,7 +14,7 @@ const envSchema = z.object({
   SUPABASE_ANON_KEY: z.string().min(1),
   JWT_SECRET: z.string().min(1).default("dev-only-change-me"),
   HF_TOKEN: z.string().optional(),
-  HF_DATASET_REPO: z.string().default("Ayoubadanabdi/Maay-Maxaa-Translation"),
+  HF_DATASET_REPO: z.string().default("SomaliDatasets/maay-maxaa-translation"),
   CORS_ORIGINS: z.string().default("http://localhost:5173"),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().default(15 * 60 * 1000),
   RATE_LIMIT_MAX: z.coerce.number().default(300),

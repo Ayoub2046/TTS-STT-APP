@@ -79,13 +79,13 @@ export async function listTranslations(req: Request, res: Response): Promise<voi
 
   let query = getSupabase()
     .from("translation_pairs")
-    .select("*, profiles(full_name)", { count: "exact" });
+    .select("*, profiles!contributor_id(full_name)", { count: "exact" });
 
   if (user.role === "contributor") {
     query = query.eq("contributor_id", user.id);
   }
 
-  if (status) query = query.eq("status", status);
+  if (status !== undefined && status !== null && status !== "") query = query.eq("status", status);
   if (domain) query = query.eq("domain", domain);
   if (direction) {
     const [src, tgt] = direction.split("-to-");
@@ -117,7 +117,7 @@ export async function getTranslation(req: Request, res: Response): Promise<void>
   const { id } = req.params;
   const { data, error } = await getSupabase()
     .from("translation_pairs")
-    .select("*, profiles(full_name)")
+    .select("*, profiles!contributor_id(full_name)")
     .eq("id", id)
     .single();
 
@@ -222,10 +222,12 @@ export async function getMyStats(req: Request, res: Response): Promise<void> {
     counts[status] = (counts[status] ?? 0) + 1;
   }
 
+  const draft = counts["draft"] ?? 0;
   const submitted = mine.length;
   const approved = counts["approved"] ?? 0;
   const stats: DashboardStats = {
-    submitted,
+    draft,
+    submitted: submitted - draft,
     approved,
     pending: counts["pending"] ?? 0,
     rejected: counts["rejected"] ?? 0,

@@ -66,7 +66,7 @@ export function requireRole(...roles: Role[]) {
       return;
     }
     if (!roles.includes(req.user.role)) {
-      res.status(403).json({ success: false, message: "Insufficient permissions." });
+      res.status(403).json({ success: false, message: `Insufficient permissions. Requires one of the following roles: ${roles.join(", ")} (your role: ${req.user.role}).` });
       return;
     }
     next();

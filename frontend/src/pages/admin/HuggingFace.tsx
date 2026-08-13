@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Rocket, RefreshCw, CloudUpload, History } from "lucide-react";
+import { Rocket, RefreshCw, CloudUpload, History, ExternalLink, Trash2, AlertTriangle } from "lucide-react";
 import { huggingfaceService } from "@/services";
 import { ApiError } from "@/services/api";
 
@@ -10,6 +10,7 @@ export default function AdminHuggingFace() {
   const [commitMessage, setCommitMessage] = useState("Release Maay-Maxaa dataset");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const { data: status, isLoading } = useQuery({
     queryKey: ["hf-status"],
@@ -29,10 +30,30 @@ export default function AdminHuggingFace() {
       huggingfaceService.push({ datasetId: "00000000-0000-0000-0000-000000000000", version, commitMessage }),
     onSuccess: (res) => {
       setResult(res.data.message);
+      setError(null);
       queryClient.invalidateQueries({ queryKey: ["hf-status"] });
       queryClient.invalidateQueries({ queryKey: ["hf-history"] });
     },
-    onError: (err) => setError(err instanceof ApiError ? err.message : "Push failed"),
+    onError: (err) => {
+      setError(err instanceof ApiError ? err.message : "Push failed");
+      setResult(null);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: () => huggingfaceService.delete(),
+    onSuccess: (res) => {
+      setResult(res.data.message);
+      setError(null);
+      setShowDeleteConfirm(false);
+      queryClient.invalidateQueries({ queryKey: ["hf-status"] });
+      queryClient.invalidateQueries({ queryKey: ["hf-history"] });
+    },
+    onError: (err) => {
+      setError(err instanceof ApiError ? err.message : "Delete failed");
+      setResult(null);
+      setShowDeleteConfirm(false);
+    },
   });
 
   const s = status?.data;
@@ -42,7 +63,7 @@ export default function AdminHuggingFace() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">Hugging Face Publishing</h1>
-        <p className="text-sm text-slate-400">Generate, validate, preview, and push the curated dataset to the HF Hub.</p>
+        <p className="text-sm text-slate-400">Generate, validate, preview, push, or delete dataset repositories on HF Hub.</p>
       </div>
 
       {isLoading ? (
@@ -55,9 +76,20 @@ export default function AdminHuggingFace() {
             </h2>
 
             <div className="mb-5 space-y-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm">
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-slate-400">Repository</span>
-                <span className="font-mono text-slate-200">{s?.repoId ?? "—"}</span>
+                {s?.repoId ? (
+                  <a
+                    href={`https://huggingface.co/datasets/${s.repoId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-mono text-indigo-300 hover:text-indigo-200 hover:underline flex items-center gap-1.5 text-xs"
+                  >
+                    {s.repoId} <ExternalLink size={13} />
+                  </a>
+                ) : (
+                  <span className="font-mono text-slate-200">—</span>
+                )}
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-400">HF_Token configured</span>
@@ -89,7 +121,7 @@ export default function AdminHuggingFace() {
             {error && <p className="mt-3 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-300">{error}</p>}
             {result && <p className="mt-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-300">{result}</p>}
 
-            <div className="mt-5 flex gap-3">
+            <div className="mt-5 flex flex-wrap gap-3">
               <button className="btn-secondary" disabled={previewing} onClick={() => generatePreview()}>
                 <RefreshCw size={16} className={previewing ? "animate-spin" : ""} /> Generate Preview
               </button>
@@ -100,6 +132,13 @@ export default function AdminHuggingFace() {
                 title={!canPush ? "No approved records to publish" : ""}
               >
                 <CloudUpload size={16} /> Push to Hugging Face
+              </button>
+              <button
+                className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm font-medium text-rose-300 hover:bg-rose-500/20 transition flex items-center gap-2"
+                disabled={deleteMutation.isPending}
+                onClick={() => setShowDeleteConfirm(true)}
+              >
+                <Trash2 size={16} /> Delete Dataset Repo
               </button>
             </div>
             {!canPush && (
@@ -158,7 +197,11 @@ export default function AdminHuggingFace() {
                       </div>
                       <span
                         className={`rounded-md px-2 py-0.5 text-[11px] ${
-                          h.status === "success" ? "bg-emerald-500/15 text-emerald-300" : "bg-rose-500/15 text-rose-300"
+                          h.status === "success"
+                            ? "bg-emerald-500/15 text-emerald-300"
+                            : h.status === "deleted"
+                            ? "bg-amber-500/15 text-amber-300"
+                            : "bg-rose-500/15 text-rose-300"
                         }`}
                       >
                         {h.status}
@@ -167,6 +210,34 @@ export default function AdminHuggingFace() {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="glass max-w-md w-full p-6 space-y-4 rounded-2xl border border-rose-500/30">
+            <div className="flex items-center gap-3 text-rose-400">
+              <AlertTriangle size={24} />
+              <h3 className="text-lg font-semibold text-slate-100">Delete Dataset Repository?</h3>
+            </div>
+            <p className="text-sm text-slate-300">
+              Are you sure you want to delete <span className="font-mono text-indigo-300">{s?.repoId}</span> from Hugging Face?
+              This action will completely remove the repository and all uploaded dataset files on Hugging Face.
+            </p>
+            <div className="flex justify-end gap-3 pt-2">
+              <button className="btn-secondary text-sm" onClick={() => setShowDeleteConfirm(false)}>
+                Cancel
+              </button>
+              <button
+                className="rounded-xl border border-rose-500/40 bg-rose-600 px-4 py-2 text-sm font-medium text-white hover:bg-rose-500 transition"
+                disabled={deleteMutation.isPending}
+                onClick={() => deleteMutation.mutate()}
+              >
+                {deleteMutation.isPending ? "Deleting..." : "Yes, Delete Repository"}
+              </button>
             </div>
           </div>
         </div>

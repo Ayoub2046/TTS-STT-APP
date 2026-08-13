@@ -1,9 +1,8 @@
 import { env } from "../config/env.js";
 import { ApiError } from "../middleware/error.js";
+import { commit, createRepo, deleteRepo } from "@huggingface/hub";
 import {
   DatasetPair,
-  DatasetSplits,
-  splitDataset,
   generateStats,
   generateDatasetCard,
   toJsonl,
@@ -21,14 +20,27 @@ export interface HfPushResult {
 export async function fetchApprovedRecords(): Promise<DatasetPair[]> {
   const { createClient } = await import("@supabase/supabase-js");
   const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
-  const { data, error } = await supabase
+
+  let { data, error } = await supabase
     .from("translation_pairs")
     .select("source_text, target_text, source_language, target_language")
     .eq("status", "approved")
-    .gte("quality_score", 4)
     .order("created_at", { ascending: true });
 
   if (error) throw new ApiError(500, `Failed to fetch approved records: ${error.message}`);
+
+  // Fallback: If no approved records exist yet, export all non-draft submissions
+  if (!data || data.length === 0) {
+    const fallback = await supabase
+      .from("translation_pairs")
+      .select("source_text, target_text, source_language, target_language")
+      .neq("status", "draft")
+      .order("created_at", { ascending: true });
+
+    if (!fallback.error && fallback.data) {
+      data = fallback.data;
+    }
+  }
 
   const pairs: DatasetPair[] = [];
   for (const row of data ?? []) {
@@ -38,25 +50,24 @@ export async function fetchApprovedRecords(): Promise<DatasetPair[]> {
   return pairs;
 }
 
-function buildFiles(pairs: DatasetPair[], commitMessage: string) {
-  const splitResult: DatasetSplits = splitDataset(pairs, 0.8, 0.1);
+function buildFiles(pairs: DatasetPair[]) {
   const stats = generateStats(pairs);
   const card = generateDatasetCard(stats);
-  const files: Array<{ path: string; content: string }> = [
+  const allJsonl = toJsonl(pairs);
+  const allCsv = toCsv(pairs);
+
+  const files = [
     { path: "README.md", content: card },
-    { path: "data/train.jsonl", content: toJsonl(splitResult.train) },
-    { path: "data/validation.jsonl", content: toJsonl(splitResult.validation) },
-    { path: "data/test.jsonl", content: toJsonl(splitResult.test) },
-    { path: "data/train.csv", content: toCsv(splitResult.train) },
-    { path: "data/validation.csv", content: toCsv(splitResult.validation) },
-    { path: "data/test.csv", content: toCsv(splitResult.test) },
-    { path: "metadata/dataset_stats.json", content: JSON.stringify(stats, null, 2) },
-    { path: "metadata/sources.json", content: JSON.stringify({ source: "MaayMaxaa DataHub community contributions", commit_message: commitMessage }, null, 2) },
+    { path: "train.jsonl", content: allJsonl },
+    { path: "data.jsonl", content: allJsonl },
+    { path: "data/train.jsonl", content: allJsonl },
+    { path: "data/data.csv", content: allCsv },
+    { path: "data.csv", content: allCsv },
   ];
-  return { splits: splitResult, stats, files };
+  return { stats, files, total: pairs.length };
 }
 
-/** Push dataset files to the Hugging Face Hub using the official files upload endpoint. */
+/** Push dataset files to Hugging Face Hub using the official @huggingface/hub package. */
 export async function pushToHuggingFace(input: {
   repoId: string;
   commitMessage: string;
@@ -64,37 +75,68 @@ export async function pushToHuggingFace(input: {
 }): Promise<HfPushResult> {
   if (!env.HF_TOKEN) throw new ApiError(500, "HF_TOKEN is not configured on the backend.");
 
-  const { splits, files } = buildFiles(input.pairs, input.commitMessage);
+  const cleanRepo = input.repoId
+    .trim()
+    .replace(/^https?:\/\/huggingface\.co\/datasets\//, "")
+    .replace(/\/$/, "");
 
-  // Upload all files in one commit via the dataset upload endpoint.
-  const form = new FormData();
-  for (const file of files) {
-    form.append("file", new Blob([file.content], { type: "text/plain" }), file.path);
-  }
-  form.append("commit_message", input.commitMessage);
+  const credentials = { accessToken: env.HF_TOKEN };
+  const repo = { type: "dataset" as const, name: cleanRepo };
 
-  const response = await fetch(
-    `https://huggingface.co/api/datasets/${encodeURIComponent(input.repoId)}/upload`,
-    {
-      method: "POST",
-      headers: { Authorization: `Bearer ${env.HF_TOKEN}` },
-      body: form,
-    }
-  );
-
-  if (!response.ok) {
-    const body = await response.text();
-    throw new ApiError(502, `Hugging Face upload failed (${response.status}): ${body.slice(0, 400)}`);
+  // Ensure the repository exists (create if it doesn't)
+  try {
+    await createRepo({ repo, credentials, private: false });
+  } catch {
+    // Ignore — repo already exists
   }
 
-  const result = (await response.json()) as { commit_id?: string; commit?: { id?: string } };
-  const revision = result.commit_id ?? result.commit?.id ?? new Date().toISOString();
+  const { files, total } = buildFiles(input.pairs);
+
+  // Use official @huggingface/hub commit function
+  const result = await commit({
+    repo,
+    credentials,
+    title: input.commitMessage,
+    operations: files.map((f) => ({
+      operation: "addOrUpdate" as const,
+      path: f.path,
+      content: new Blob([f.content], { type: "text/plain" }),
+    })),
+  });
+
+  const revision = (result as { commit?: { oid?: string } })?.commit?.oid ?? new Date().toISOString();
 
   return {
-    repoId: input.repoId,
+    repoId: cleanRepo,
     revision,
     pushedAt: new Date().toISOString(),
-    splits: { train: splits.train.length, validation: splits.validation.length, test: splits.test.length },
+    splits: { train: total, validation: 0, test: 0 },
+  };
+}
+
+export async function deleteFromHuggingFace(input: {
+  repoId: string;
+}): Promise<{ repoId: string; deletedAt: string }> {
+  if (!env.HF_TOKEN) throw new ApiError(500, "HF_TOKEN is not configured on the backend.");
+
+  const cleanRepo = input.repoId
+    .trim()
+    .replace(/^https?:\/\/huggingface\.co\/datasets\//, "")
+    .replace(/\/$/, "");
+
+  const credentials = { accessToken: env.HF_TOKEN };
+  const repo = { type: "dataset" as const, name: cleanRepo };
+
+  try {
+    await deleteRepo({ repo, credentials });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    throw new ApiError(502, `Failed to delete Hugging Face dataset repository (${cleanRepo}): ${msg}`);
+  }
+
+  return {
+    repoId: cleanRepo,
+    deletedAt: new Date().toISOString(),
   };
 }
 
@@ -103,11 +145,10 @@ export async function previewDataset(pairs: DatasetPair[]): Promise<{
   splits: { train: number; validation: number; test: number };
   stats: Record<string, number | string>;
 }> {
-  const splits = splitDataset(pairs, 0.8, 0.1);
   const stats = generateStats(pairs);
   return {
     pairs,
-    splits: { train: splits.train.length, validation: splits.validation.length, test: splits.test.length },
+    splits: { train: pairs.length, validation: 0, test: 0 },
     stats,
   };
 }

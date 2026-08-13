@@ -141,9 +141,28 @@ export const huggingfaceService = {
       `/api/huggingface/push`,
       data
     ),
+  delete: () =>
+    api.delete<{ success: boolean; data: { repoId: string; message: string } }>(`/api/huggingface/delete`),
   history: () =>
     api.get<{
       success: boolean;
       data: Array<{ id: string; repo_id: string; commit_id: string | null; commit_message: string; status: string; pushed_at: string; profiles?: { full_name: string | null } }>;
     }>(`/api/huggingface/history`),
+};
+
+export const publicService = {
+  stats: () =>
+    api.get<{
+      success: boolean;
+      data: {
+        totalUsers: number;
+        totalSentences: number;
+        approvedSentences: number;
+        highQualitySentences: number;
+        maayToMaxaa: number;
+        maxaaToMaay: number;
+        hfRepoId: string;
+        hfRepoUrl: string;
+      };
+    }>(`/api/public/stats`),
 };

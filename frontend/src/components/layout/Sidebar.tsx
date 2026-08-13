@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Languages, LayoutDashboard, PenLine, ListChecks, ShieldCheck, Users, Rocket, CloudUpload } from "lucide-react";
+import { Languages, LayoutDashboard, PenLine, ListChecks, ShieldCheck, Users, Rocket, CloudUpload, FileText } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 
 const links = [
@@ -7,6 +7,7 @@ const links = [
   { to: "/contributor/submit", icon: PenLine, label: "Add Translation", roles: ["contributor"] },
   { to: "/contributor/contributions", icon: ListChecks, label: "My Contributions", roles: ["contributor"] },
   { to: "/reviewer/queue", icon: ShieldCheck, label: "Review Queue", roles: ["reviewer", "admin"] },
+  { to: "/admin/submissions", icon: FileText, label: "All Submissions", roles: ["admin", "reviewer"] },
   { to: "/admin/dashboard", icon: LayoutDashboard, label: "Admin", roles: ["admin"] },
   { to: "/admin/users", icon: Users, label: "Users", roles: ["admin"] },
   { to: "/admin/huggingface", icon: CloudUpload, label: "Hugging Face", roles: ["admin"] },

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Users, Type, ShieldCheck, CheckCircle2, XCircle, Star, Clock, ClipboardList } from "lucide-react";
+import { Users, Type, ShieldCheck, CheckCircle2, XCircle, Star, Clock, ClipboardList, FileText } from "lucide-react";
 import { adminService, datasetService } from "@/services";
 import { StatCard } from "@/components/ui";
 
@@ -86,7 +86,14 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <Link to="/admin/submissions" className="glass glass-hover flex items-center justify-between p-5 hover:bg-white/[0.06]">
+              <div>
+                <p className="text-sm font-medium">All Submissions</p>
+                <p className="text-xs text-slate-500">View all user translation pairs</p>
+              </div>
+              <FileText size={18} className="text-indigo-400" />
+            </Link>
             <Link to="/admin/users" className="glass glass-hover flex items-center justify-between p-5 hover:bg-white/[0.06]">
               <div>
                 <p className="text-sm font-medium">User Management</p>

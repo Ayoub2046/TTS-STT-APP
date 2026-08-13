@@ -6,14 +6,15 @@
   "type": "module",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "node node_modules/tsx/dist/cli.mjs watch src/server.ts",
-    "build": "node node_modules/typescript/bin/tsc",
+    "dev": "node --import tsx/esm src/server.ts",
+    "build": "node -e \"import('typescript/bin/tsc')\"",
     "start": "node dist/server.js",
-    "typecheck": "node node_modules/typescript/bin/tsc --noEmit",
+    "typecheck": "node -e \"import('typescript/bin/tsc')\"",
     "lint": "echo \"No linter configured yet\"",
-    "seed": "node node_modules/tsx/dist/cli.mjs src/scripts/seed.ts"
+    "seed": "node --import tsx/esm src/scripts/seed.ts"
   },
   "dependencies": {
+    "@huggingface/hub": "^2.15.0",
     "@supabase/supabase-js": "^2.45.4",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

@@ -115,35 +115,77 @@ export function generateStats(pairs: DatasetPair[]): Record<string, number | str
 }
 
 export function generateDatasetCard(stats: Record<string, number | string>): string {
-  return `# MaayMaxaa Translation Dataset
+  return `---
+language:
+- so
+license: cc-by-4.0
+task_categories:
+- translation
+pretty_name: Maay ↔ Maxaa Somali Parallel Translation Corpus
+configs:
+- config_name: default
+  data_files:
+  - split: train
+    path: "data/train.jsonl"
+  default: true
+dataset_info:
+  features:
+  - name: source
+    dtype: string
+  - name: target
+    dtype: string
+  - name: source_lang
+    dtype: string
+  - name: target_lang
+    dtype: string
+  splits:
+  - name: train
+  - name: validation
+  - name: test
+---
 
-A collaborative parallel corpus for Maay ↔ Maxaa machine translation.
+# Maay ↔ Maxaa Somali Parallel Translation Corpus
 
-## Stats
+Official parallel dataset for **Maay (Maay Maay)** and **Maxaa-tiri (Standard Somali)** dialects, collected and curated by the community via **MaayMaxaa DataHub**.
+
+## 📊 Dataset Statistics
 
 | Metric | Value |
 |--------|-------|
-| Total records | ${stats.total_records} |
-| Maay → Maxaa | ${stats.maay_to_maxaa} |
-| Maxaa → Maay | ${stats.maxaa_to_maay} |
-| Avg source length | ${stats.avg_source_length} |
-| Avg target length | ${stats.avg_target_length} |
-| Version | ${stats.version} |
+| **Total Sentences** | ${stats.total_records} |
+| **Maay → Maxaa** | ${stats.maay_to_maxaa} |
+| **Maxaa → Maay** | ${stats.maxaa_to_maay} |
+| **Avg Source Length** | ${stats.avg_source_length} chars |
+| **Avg Target Length** | ${stats.avg_target_length} chars |
+| **Version** | ${stats.version} |
 
-## Languages
+## 🌐 Languages & Dialects
 
-- Maay (Maay Maay) — Southern Somali dialect
-- Maxaa-tiri (Maxaa Soomaali) — Standard Somali
+- **Maay (Maay Maay)**: Southern Somali language/dialect spoken across central and southern Somalia.
+- **Maxaa-tiri (Standard Somali)**: Official written standard Somali dialect.
 
-## Columns
+## 🚀 Quickstart (Python)
 
-- \`source\`: source sentence
-- \`target\`: target sentence
-- \`source_lang\`: \`maay\` or \`maxaa\`
-- \`target_lang\`: \`maay\` or \`maxaa\`
+\`\`\`python
+from datasets import load_dataset
 
-## License
+# Load dataset from Hugging Face Hub
+dataset = load_dataset("SomaliDatasets/maay-maxaa-translation")
 
-This dataset is released for research and open development of Somali language technology.
+# Inspect train split
+print(dataset["train"][0])
+# {'source': '...', 'target': '...', 'source_lang': 'maay', 'target_lang': 'maxaa'}
+\`\`\`
+
+## 📁 Schema & Fields
+
+- \`source\`: Source text in original dialect.
+- \`target\`: Translated target text.
+- \`source_lang\`: Language code (\`maay\` or \`maxaa\`).
+- \`target_lang\`: Language code (\`maay\` or \`maxaa\`).
+
+## 📜 License
+
+This dataset is released under the **Creative Commons Attribution 4.0 International (CC-BY-4.0)** license for research, model training, and open development of Somali NLP.
 `;
 }

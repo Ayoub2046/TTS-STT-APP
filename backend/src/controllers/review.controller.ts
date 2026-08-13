@@ -28,7 +28,7 @@ export async function getPendingQueue(req: Request, res: Response): Promise<void
 
   const { data, error, count } = await getSupabase()
     .from("translation_pairs")
-    .select("*, profiles(full_name)", { count: "exact" })
+    .select("*, profiles!contributor_id(full_name)", { count: "exact" })
     .in("status", ["pending", "correction_requested"])
     .order("created_at", { ascending: true })
     .range(from, to);
@@ -68,7 +68,7 @@ export async function submitReview(req: Request, res: Response): Promise<void> {
   if (!["pending", "correction_requested"].includes(existing.status)) {
     throw new ApiError(409, "Only pending or correction-requested translations can be reviewed.");
   }
-  if (existing.contributor_id === user.id) {
+  if (existing.contributor_id === user.id && user.role !== "admin") {
     throw new ApiError(403, "You cannot review your own submission.");
   }
 
@@ -153,7 +153,7 @@ export async function getReviewHistory(req: Request, res: Response): Promise<voi
 
   const { data, error } = await getSupabase()
     .from("reviews")
-    .select("*, profiles(full_name)")
+    .select("*, profiles!reviewer_id(full_name)")
     .eq("translation_id", id)
     .order("created_at", { ascending: false });
 

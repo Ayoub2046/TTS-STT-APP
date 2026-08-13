@@ -76,6 +76,7 @@ export interface TranslationPair {
 }
 
 export interface DashboardStats {
+  draft: number;
   submitted: number;
   approved: number;
   pending: number;

@@ -65,7 +65,7 @@ export async function getDatasetStats(req: Request, res: Response): Promise<void
 
   const statuses = ["draft", "pending", "under_review", "correction_requested", "approved", "rejected", "published"];
 
-  let query = getSupabase().from("translation_pairs").select("status, source_language, target_language, quality_score, domain, validator_notes");
+  let query = getSupabase().from("translation_pairs").select("status, source_language, target_language, quality_score, domain");
 
   if (sourceLanguage) query = query.eq("source_language", sourceLanguage);
   if (targetLanguage) query = query.eq("target_language", targetLanguage);

@@ -5,6 +5,7 @@ import rateLimit from "express-rate-limit";
 import { pinoHttp } from "pino-http";
 import { env } from "./config/env.js";
 import authRoutes from "./routes/auth.routes.js";
+import publicRoutes from "./routes/public.routes.js";
 import translationRoutes from "./routes/translation.routes.js";
 import reviewRoutes from "./routes/review.routes.js";
 import datasetRoutes from "./routes/dataset.routes.js";
@@ -37,6 +38,7 @@ app.get("/api/health", (_req: Request, res: Response) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/public", publicRoutes);
 app.use("/api/translations", translationRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/datasets", datasetRoutes);

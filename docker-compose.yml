@@ -1,22 +1,47 @@
-# Optional containerization. The app depends on cloud Supabase, so only the
-# backend + frontend are containerized. Build & run:
-#   docker compose up --build
+version: "3.8"
+
 services:
   backend:
     build:
-      context: ./backend
+      context: .
+      dockerfile: ./backend/Dockerfile
+    container_name: maaymaxaa-backend
+    restart: always
+    environment:
+      - PORT=4000
+      - NODE_ENV=production
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - HF_TOKEN=${HF_TOKEN}
+      - HF_DATASET_REPO=${HF_DATASET_REPO:-SomaliDatasets/maay-maxaa-translation}
+      - CORS_ORIGINS=${CORS_ORIGINS:-*}
+      - RATE_LIMIT_WINDOW_MS=${RATE_LIMIT_WINDOW_MS:-900000}
+      - RATE_LIMIT_MAX=${RATE_LIMIT_MAX:-1000}
     ports:
       - "4000:4000"
-    env_file:
-      - ./backend/.env
-    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:4000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
 
   frontend:
     build:
-      context: ./frontend
+      context: .
+      dockerfile: ./frontend/Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-/api}
+    container_name: maaymaxaa-frontend
+    restart: always
     ports:
-      - "8080:80"
-    environment:
-      VITE_API_URL: http://localhost:4000
+      - "80:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+
+networks:
+  default:
+    name: maaymaxaa-network

@@ -31,6 +31,7 @@ export default function ContributorDashboard() {
       ) : (
         <>
           <div className="card-grid">
+            <StatCard label="Draft" value={s?.draft ?? 0} icon={<Clock size={18} />} accent="text-slate-300" />
             <StatCard label="Submitted" value={s?.submitted ?? 0} icon={<Send size={18} />} accent="text-sky-300" />
             <StatCard label="Approved" value={s?.approved ?? 0} icon={<CheckCircle2 size={18} />} accent="text-emerald-300" />
             <StatCard label="Pending" value={s?.pending ?? 0} icon={<Clock size={18} />} accent="text-amber-300" />
