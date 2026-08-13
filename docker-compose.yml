@@ -17,8 +17,9 @@ services:
       - CORS_ORIGINS=${CORS_ORIGINS:-*}
       - RATE_LIMIT_WINDOW_MS=${RATE_LIMIT_WINDOW_MS:-900000}
       - RATE_LIMIT_MAX=${RATE_LIMIT_MAX:-1000}
-    ports:
-      - "4001:4000"
+    # No ports exposed - Dokploy Traefik routes domain traffic to container port 4000
+    expose:
+      - "4000"
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:4000/api/health || exit 0"]
       interval: 10s
@@ -34,8 +35,9 @@ services:
         - VITE_API_URL=${VITE_API_URL:-/api}
     container_name: maaymaxaa-frontend
     restart: always
-    ports:
-      - "3080:80"
+    # No ports exposed - Dokploy Traefik routes your domain to container port 80
+    expose:
+      - "80"
     depends_on:
       backend:
         condition: service_started
