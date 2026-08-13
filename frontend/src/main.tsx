@@ -4,6 +4,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
+import { registerSW } from "virtual:pwa-register";
+
+// Auto register PWA service worker with immediate update checking
+registerSW({ immediate: true });
 
 const queryClient = new QueryClient({
   defaultOptions: {

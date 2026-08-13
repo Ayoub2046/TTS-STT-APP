@@ -20,6 +20,7 @@
     "zustand": "^4.5.5"
   },
   "optionalDependencies": {
+    "@rollup/rollup-linux-x64-musl": "^4.62.4",
     "@rollup/rollup-win32-x64-msvc": "^4.62.4"
   },
   "devDependencies": {

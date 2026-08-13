@@ -16,6 +16,9 @@ RUN npm ci || npm install
 # Copy frontend codebase
 COPY frontend ./frontend
 
+# Ensure Linux Rollup native binary is present inside Alpine Docker container
+RUN npm install @rollup/rollup-linux-x64-musl --workspace frontend
+
 # Build frontend static bundle into /app/frontend/dist
 RUN npm run build --workspace frontend
 

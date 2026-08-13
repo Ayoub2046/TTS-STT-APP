@@ -16,6 +16,8 @@ import AdminUsers from "@/pages/admin/Users";
 import AdminHuggingFace from "@/pages/admin/HuggingFace";
 import AdminSubmissions from "@/pages/admin/Submissions";
 
+import PwaInstallBanner from "@/components/common/PwaInstallBanner";
+
 export default function App() {
   const { user, token, setUser, logout } = useAuthStore();
 
@@ -29,23 +31,26 @@ export default function App() {
   }, [token, user, setUser, logout]);
 
   return (
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+    <>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-      <Route element={<ProtectedRoute />}>
-        <Route element={<AppLayout />}>
-          <Route path="/contributor/dashboard" element={<ContributorDashboard />} />
-          <Route path="/contributor/submit" element={<SubmitTranslation />} />
-          <Route path="/contributor/contributions" element={<MyContributions />} />
-          <Route path="/reviewer/queue" element={<ReviewQueue />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/submissions" element={<AdminSubmissions />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
-          <Route path="/admin/huggingface" element={<AdminHuggingFace />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AppLayout />}>
+            <Route path="/contributor/dashboard" element={<ContributorDashboard />} />
+            <Route path="/contributor/submit" element={<SubmitTranslation />} />
+            <Route path="/contributor/contributions" element={<MyContributions />} />
+            <Route path="/reviewer/queue" element={<ReviewQueue />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/submissions" element={<AdminSubmissions />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/huggingface" element={<AdminHuggingFace />} />
+          </Route>
         </Route>
-      </Route>
-    </Routes>
+      </Routes>
+      <PwaInstallBanner />
+    </>
   );
 }
