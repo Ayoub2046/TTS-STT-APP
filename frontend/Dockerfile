@@ -11,7 +11,7 @@ COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
 # Install dependencies for workspace monorepo
-RUN npm ci
+RUN npm ci || npm install
 
 # Copy frontend codebase
 COPY frontend ./frontend

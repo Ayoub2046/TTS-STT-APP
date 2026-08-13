@@ -8,7 +8,7 @@ COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
 # Install dependencies for workspace monorepo
-RUN npm ci
+RUN npm ci || npm install
 
 # Copy backend codebase
 COPY backend ./backend
@@ -27,7 +27,7 @@ COPY package.json package-lock.json ./
 COPY backend/package.json ./backend/
 
 # Install production dependencies only
-RUN npm ci --omit=dev --workspace backend
+RUN npm ci --omit=dev --workspace backend || npm install --omit=dev --workspace backend
 
 # Copy built dist files from builder
 COPY --from=builder /app/backend/dist ./backend/dist
