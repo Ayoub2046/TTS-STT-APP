@@ -18,7 +18,7 @@ services:
       - RATE_LIMIT_WINDOW_MS=${RATE_LIMIT_WINDOW_MS:-900000}
       - RATE_LIMIT_MAX=${RATE_LIMIT_MAX:-1000}
     ports:
-      - "4000:4000"
+      - "4001:4000"
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:4000/api/health || exit 0"]
       interval: 10s
@@ -35,7 +35,7 @@ services:
     container_name: maaymaxaa-frontend
     restart: always
     ports:
-      - "8080:80"
+      - "3080:80"
     depends_on:
       backend:
         condition: service_started
