@@ -1,5 +1,20 @@
 export const API_URL = import.meta.env.VITE_API_URL ?? "";
 
+export function buildApiUrl(path: string): string {
+  const base = (API_URL ?? "").trim();
+  if (!base) return path;
+
+  // Prevent duplicate /api/api when base ends with /api and path starts with /api
+  if (base.endsWith("/api") && path.startsWith("/api")) {
+    const baseWithoutApi = base.slice(0, -4);
+    return `${baseWithoutApi}${path}`;
+  }
+
+  const cleanBase = base.replace(/\/+$/, "");
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  return `${cleanBase}${cleanPath}`;
+}
+
 const TOKEN_KEY = "dh_token";
 
 export function getToken(): string | null {
@@ -32,7 +47,8 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${API_URL}${path}`, { ...options, headers });
+  const url = buildApiUrl(path);
+  const res = await fetch(url, { ...options, headers });
 
   let body: unknown;
   try {
