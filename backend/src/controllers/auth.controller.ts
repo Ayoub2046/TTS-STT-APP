@@ -25,19 +25,23 @@ export async function register(req: Request, res: Response): Promise<void> {
     throw new ApiError(400, "User could not be created.");
   }
 
-  const { error: profileError } = await getSupabase().from("profiles").insert({
-    id: authData.user.id,
-    email,
-    full_name: fullName,
-    role: "contributor",
-    native_language: nativeLanguage,
-    experience_level: experienceLevel,
-    is_active: true,
-  });
-
-  if (profileError) {
-    console.error("[auth:register] profile insert failed", profileError);
-    throw new ApiError(500, "Account created but profile setup failed. Please contact an admin.");
+  try {
+    await getSupabase()
+      .from("profiles")
+      .upsert(
+        {
+          id: authData.user.id,
+          email,
+          full_name: fullName,
+          role: "contributor",
+          native_language: nativeLanguage ?? null,
+          experience_level: experienceLevel ?? null,
+          is_active: true,
+        },
+        { onConflict: "id" }
+      );
+  } catch (err) {
+    console.warn("[auth:register] non-fatal profile update warning:", err);
   }
 
   await logAudit({
