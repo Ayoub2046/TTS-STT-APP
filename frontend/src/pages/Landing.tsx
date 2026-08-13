@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { publicService } from "@/services";
 import { useAuthStore } from "@/store/auth";
+import Logo from "@/components/common/Logo";
 
 export default function LandingPage() {
   const { user } = useAuthStore();
@@ -43,16 +44,8 @@ export default function LandingPage() {
       {/* Header / Navbar */}
       <header className="sticky top-0 z-40 backdrop-blur-xl bg-slate-950/80 border-b border-white/10 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-              <Sparkles className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <h1 className="font-bold text-lg leading-tight bg-gradient-to-r from-white via-slate-200 to-indigo-200 bg-clip-text text-transparent">
-                MaayMaxaa DataHub
-              </h1>
-              <p className="text-[11px] text-slate-400 font-mono">Parallel Somali Corpus</p>
-            </div>
+          <div className="cursor-pointer" onClick={() => navigate("/")}>
+            <Logo size="sm" />
           </div>
 
           <div className="flex items-center gap-4">
@@ -372,9 +365,12 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-white/10 bg-slate-950 py-8 px-6 text-xs text-slate-500">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-          <div>
-            <p className="text-slate-400 font-medium">MaayMaxaa DataHub &copy; {new Date().getFullYear()}</p>
-            <p className="text-[11px] text-slate-600 mt-0.5">Open-Source Somali Parallel Corpus under CC-BY 4.0 License</p>
+          <div className="flex items-center gap-3">
+            <Logo size="sm" showText={false} />
+            <div>
+              <p className="text-slate-400 font-medium">Maay&Maxaa DataHub &copy; {new Date().getFullYear()}</p>
+              <p className="text-[11px] text-slate-600 mt-0.5">Open-Source Somali Parallel Corpus under CC-BY 4.0 License</p>
+            </div>
           </div>
           <div className="flex items-center gap-6">
             <a

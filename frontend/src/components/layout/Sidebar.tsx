@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
-import { Languages, LayoutDashboard, PenLine, ListChecks, ShieldCheck, Users, Rocket, CloudUpload, FileText } from "lucide-react";
+import { LayoutDashboard, PenLine, ListChecks, ShieldCheck, Users, Rocket, CloudUpload, FileText } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
+import Logo from "@/components/common/Logo";
 
 const links = [
   { to: "/contributor/dashboard", icon: LayoutDashboard, label: "Dashboard", roles: ["contributor"] },
@@ -18,14 +19,8 @@ export default function Sidebar() {
 
   return (
     <aside className="fixed inset-y-0 left-0 z-20 flex w-64 flex-col border-r border-white/10 bg-white/[0.02] backdrop-blur-xl">
-      <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/20 text-indigo-300">
-          <Languages size={20} />
-        </div>
-        <div>
-          <p className="text-sm font-semibold">MaayMaxaa</p>
-          <p className="text-xs text-slate-400">DataHub</p>
-        </div>
+      <div className="border-b border-white/10 px-5 py-5">
+        <Logo size="sm" />
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-4">

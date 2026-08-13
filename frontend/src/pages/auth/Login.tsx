@@ -1,9 +1,9 @@
 import { FormEvent, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Languages } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 import { authService } from "@/services";
 import { ApiError } from "@/services/api";
+import Logo from "@/components/common/Logo";
 
 export default function Login() {
   const setAuth = useAuthStore((s) => s.setAuth);
@@ -39,10 +39,7 @@ export default function Login() {
     <div className="flex min-h-screen items-center justify-center bg-base p-4">
       <div className="glass w-full max-w-md p-8">
         <div className="mb-6 flex flex-col items-center gap-3">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/20 text-indigo-300">
-            <Languages size={26} />
-          </div>
-          <h1 className="text-xl font-semibold">MaayMaxaa DataHub</h1>
+          <Logo size="lg" />
           <p className="text-sm text-slate-400">Sign in to your account</p>
         </div>
 
