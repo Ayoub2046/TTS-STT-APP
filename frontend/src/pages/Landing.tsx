@@ -5,7 +5,6 @@ import {
   Database,
   CheckCircle2,
   Sparkles,
-  ExternalLink,
   ArrowRight,
   ShieldCheck,
   Globe,
