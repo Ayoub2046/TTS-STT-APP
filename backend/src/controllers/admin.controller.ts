@@ -58,8 +58,10 @@ export async function getAuditLogs(req: Request, res: Response): Promise<void> {
 export async function getAdminStats(_req: Request, res: Response): Promise<void> {
   const supabase = getSupabase();
 
-  const [profiles, translations, reviews, pending] = await Promise.all([
-    supabase.from("profiles").select("role", { count: "exact", head: true }),
+  const [totalUsersRes, contributorsRes, reviewersRes, translations, reviews, pending] = await Promise.all([
+    supabase.from("profiles").select("id", { count: "exact", head: true }),
+    supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "contributor"),
+    supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "reviewer"),
     supabase.from("translation_pairs").select("status, quality_score"),
     supabase.from("reviews").select("id", { count: "exact", head: true }),
     supabase.from("translation_pairs").select("id", { count: "exact", head: true }).eq("status", "pending"),
@@ -69,15 +71,12 @@ export async function getAdminStats(_req: Request, res: Response): Promise<void>
   const byStatus: Record<string, number> = {};
   for (const r of rows) byStatus[r.status] = (byStatus[r.status] ?? 0) + 1;
 
-  const contributors = (profiles.data ?? []).filter((p) => (p as { role: string }).role === "contributor").length;
-  const reviewers = (profiles.data ?? []).filter((p) => (p as { role: string }).role === "reviewer").length;
-
   res.json({
     success: true,
     data: {
-      totalUsers: profiles.count ?? 0,
-      contributors,
-      reviewers,
+      totalUsers: totalUsersRes.count ?? 0,
+      contributors: contributorsRes.count ?? 0,
+      reviewers: reviewersRes.count ?? 0,
       totalSentences: rows.length,
       approved: byStatus["approved"] ?? 0,
       rejected: byStatus["rejected"] ?? 0,

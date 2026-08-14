@@ -27,7 +27,7 @@ export async function getPublicStats(_req: Request, res: Response): Promise<void
   res.json({
     success: true,
     data: {
-      totalUsers: Math.max(totalUsers, 1),
+      totalUsers: totalUsers,
       totalSentences: nonDraftRows.length,
       approvedSentences: approvedRows.length > 0 ? approvedRows.length : nonDraftRows.length,
       highQualitySentences: highQualityRows.length > 0 ? highQualityRows.length : nonDraftRows.length,
