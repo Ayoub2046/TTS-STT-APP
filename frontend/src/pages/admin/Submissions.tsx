@@ -73,11 +73,11 @@ export default function AllSubmissions() {
           </div>
 
           {/* Search Box */}
-          <div className="relative min-w-[240px]">
+          <div className="relative w-full sm:w-auto sm:min-w-[240px]">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              className="input pl-9 text-xs"
+              className="input pl-9 text-xs w-full"
               placeholder="Search sentence or contributor..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}

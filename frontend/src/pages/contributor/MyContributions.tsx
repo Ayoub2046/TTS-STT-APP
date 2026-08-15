@@ -40,7 +40,7 @@ export default function MyContributions() {
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         {[
           { value: "", label: "All" },
           { value: "draft", label: "Draft" },
@@ -52,8 +52,8 @@ export default function MyContributions() {
           <button
             key={s.value}
             onClick={() => setStatus(s.value)}
-            className={`rounded-lg px-3 py-1.5 text-xs transition-colors ${
-              status === s.value ? "bg-indigo-500/20 text-indigo-200" : "bg-white/5 text-slate-400 hover:bg-white/10"
+            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+              status === s.value ? "bg-indigo-500/20 text-indigo-200 border border-indigo-500/30" : "bg-white/5 text-slate-400 hover:bg-white/10"
             }`}
           >
             {s.label}
@@ -66,7 +66,7 @@ export default function MyContributions() {
       ) : !data?.data?.length ? (
         <EmptyState message="No contributions yet. Add your first translation pair." />
       ) : (
-        <div className="glass overflow-hidden">
+        <div className="glass overflow-x-auto min-w-full">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/10 text-left text-xs uppercase tracking-wider text-slate-400">

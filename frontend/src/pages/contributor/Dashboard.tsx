@@ -16,12 +16,12 @@ export default function ContributorDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Welcome, {user?.full_name?.split(" ")[0] ?? "Sahib"} 👋</h1>
-          <p className="text-sm text-slate-400">Track your contributions to the Maay ↔ Maxaa corpus.</p>
+          <h1 className="text-xl sm:text-2xl font-bold">Welcome, {user?.full_name?.split(" ")[0] ?? "Contributor"} 👋</h1>
+          <p className="text-xs sm:text-sm text-slate-400">Track your contributions to the Maay ↔ Maxaa corpus.</p>
         </div>
-        <Link to="/contributor/submit" className="btn-primary">
+        <Link to="/contributor/submit" className="btn-primary w-full sm:w-auto text-center justify-center">
           <Send size={16} /> Add Translation
         </Link>
       </div>
