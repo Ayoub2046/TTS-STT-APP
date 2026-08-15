@@ -59,12 +59,12 @@ export async function getAdminStats(_req: Request, res: Response): Promise<void>
   const supabase = getSupabase();
 
   const [totalUsersRes, contributorsRes, reviewersRes, translations, reviews, pending] = await Promise.all([
-    supabase.from("profiles").select("id", { count: "exact", head: true }),
-    supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "contributor"),
-    supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "reviewer"),
+    supabase.from("profiles").select("id", { count: "exact" }),
+    supabase.from("profiles").select("id", { count: "exact" }).eq("role", "contributor"),
+    supabase.from("profiles").select("id", { count: "exact" }).eq("role", "reviewer"),
     supabase.from("translation_pairs").select("status, quality_score"),
-    supabase.from("reviews").select("id", { count: "exact", head: true }),
-    supabase.from("translation_pairs").select("id", { count: "exact", head: true }).eq("status", "pending"),
+    supabase.from("reviews").select("id", { count: "exact" }),
+    supabase.from("translation_pairs").select("id", { count: "exact" }).eq("status", "pending"),
   ]);
 
   const rows = (translations.data ?? []) as Array<{ status: string; quality_score: number | null }>;
@@ -74,15 +74,15 @@ export async function getAdminStats(_req: Request, res: Response): Promise<void>
   res.json({
     success: true,
     data: {
-      totalUsers: totalUsersRes.count ?? 0,
-      contributors: contributorsRes.count ?? 0,
-      reviewers: reviewersRes.count ?? 0,
+      totalUsers: totalUsersRes.data?.length ?? totalUsersRes.count ?? 0,
+      contributors: contributorsRes.data?.length ?? contributorsRes.count ?? 0,
+      reviewers: reviewersRes.data?.length ?? reviewersRes.count ?? 0,
       totalSentences: rows.length,
       approved: byStatus["approved"] ?? 0,
       rejected: byStatus["rejected"] ?? 0,
-      pending: pending.count ?? 0,
+      pending: pending.data?.length ?? pending.count ?? 0,
       qualityGte4: rows.filter((r) => (r.quality_score ?? 0) >= 4).length,
-      totalReviews: reviews.count ?? 0,
+      totalReviews: reviews.data?.length ?? reviews.count ?? 0,
     },
   });
 }

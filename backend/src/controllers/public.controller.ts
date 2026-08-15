@@ -6,11 +6,11 @@ export async function getPublicStats(_req: Request, res: Response): Promise<void
   const supabase = getSupabase();
 
   const [usersRes, pairsRes] = await Promise.all([
-    supabase.from("profiles").select("id", { count: "exact", head: true }),
+    supabase.from("profiles").select("id", { count: "exact" }),
     supabase.from("translation_pairs").select("status, quality_score, source_language, target_language"),
   ]);
 
-  const totalUsers = usersRes.count ?? 0;
+  const totalUsers = usersRes.data?.length ?? usersRes.count ?? 0;
   const rows = pairsRes.data ?? [];
 
   const nonDraftRows = rows.filter((r) => r.status !== "draft");
