@@ -227,6 +227,11 @@ CREATE POLICY "public_read_approved_translations"
   ON translation_pairs FOR SELECT
   USING (status = 'approved');
 
+-- Everyone can read basic profile info for stats and directory views
+CREATE POLICY "public_read_profiles"
+  ON profiles FOR SELECT
+  USING (true);
+
 -- Users manage their own profile
 CREATE POLICY "users_manage_own_profile"
   ON profiles FOR ALL

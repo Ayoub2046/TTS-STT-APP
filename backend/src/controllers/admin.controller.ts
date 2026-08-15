@@ -58,14 +58,19 @@ export async function getAuditLogs(req: Request, res: Response): Promise<void> {
 export async function getAdminStats(_req: Request, res: Response): Promise<void> {
   const supabase = getSupabase();
 
-  const [totalUsersRes, contributorsRes, reviewersRes, translations, reviews, pending] = await Promise.all([
+  const [totalUsersRes, authUsersRes, contributorsRes, reviewersRes, translations, reviews, pending] = await Promise.all([
     supabase.from("profiles").select("id", { count: "exact" }),
+    supabase.auth.admin.listUsers({ perPage: 1000 }).catch(() => ({ data: { users: [] } })),
     supabase.from("profiles").select("id", { count: "exact" }).eq("role", "contributor"),
     supabase.from("profiles").select("id", { count: "exact" }).eq("role", "reviewer"),
     supabase.from("translation_pairs").select("status, quality_score"),
     supabase.from("reviews").select("id", { count: "exact" }),
     supabase.from("translation_pairs").select("id", { count: "exact" }).eq("status", "pending"),
   ]);
+
+  const profileCount = totalUsersRes.data?.length ?? totalUsersRes.count ?? 0;
+  const authCount = authUsersRes.data?.users?.length ?? 0;
+  const totalUsers = Math.max(profileCount, authCount);
 
   const rows = (translations.data ?? []) as Array<{ status: string; quality_score: number | null }>;
   const byStatus: Record<string, number> = {};
@@ -74,7 +79,7 @@ export async function getAdminStats(_req: Request, res: Response): Promise<void>
   res.json({
     success: true,
     data: {
-      totalUsers: totalUsersRes.data?.length ?? totalUsersRes.count ?? 0,
+      totalUsers,
       contributors: contributorsRes.data?.length ?? contributorsRes.count ?? 0,
       reviewers: reviewersRes.data?.length ?? reviewersRes.count ?? 0,
       totalSentences: rows.length,
